@@ -39,10 +39,5 @@
     "test:setup": "php ./bin/setup-tests.php",
     "test": "./vendor/bin/codecept --config ./tests",
     "test:integration": "@test run integration"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "3.5-dev"
-    }
   }
 }
