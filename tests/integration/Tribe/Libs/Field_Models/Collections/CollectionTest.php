@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace Tribe\Libs\Acf_Field_Models\Collections;
+namespace Tribe\Libs\Field_Models\Collections;
 
 use Tribe\Libs\Tests\Test_Case;
 

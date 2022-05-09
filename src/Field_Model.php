@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tribe\Libs\Acf_Field_Models;
+namespace Tribe\Libs\Field_Models;
 
 use Spatie\DataTransferObject\FieldValidator;
 use Spatie\DataTransferObject\FlexibleDataTransferObject;
