@@ -1,0 +1,31 @@
+# TODO: Remove this file once moved into tribe-libs
+
+# OS generated files #
+######################
+
+.DS_Store*
+ehthumbs.db
+._*
+*~
+.svn
+.cvs
+*.bak
+*.swp
+Thumbs.db
+.DS_Store
+.idea
+pimple.json
+.phpstorm.meta.php
+
+# Quality & testing tools #
+###########################
+phpcs.xml
+phpunit.xml
+.phpunit.result.cache
+tests/codeception.yml
+tests/.env
+tests/wordpress
+
+# Project #
+###########
+vendor/

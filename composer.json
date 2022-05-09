@@ -1,0 +1,48 @@
+{
+  "name": "moderntribe/square1-acf-field-models",
+  "type": "library",
+  "description": "Data Transfer Objects (models) for Advanced custom fields",
+  "license": "GPL-2.0-only",
+  "config": {
+    "platform": {
+      "php": "7.4.7"
+    },
+    "vendor-dir": "vendor",
+    "preferred-install": "dist"
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.4",
+    "spatie/data-transfer-object": "^2.8"
+  },
+  "require-dev": {
+    "larapack/dd": "^1.1",
+    "nelexa/zip": "^4.0",
+    "brain/monkey": "2.*",
+    "opis/json-schema": "^2.3",
+    "fakerphp/faker": "^1.19",
+    "lucatume/wp-browser": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tribe\\Libs\\Acf_Field_Models\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tribe\\Libs\\Tests\\": "tests/_support/Classes",
+      "Tribe\\Libs\\Acf_Field_Models\\": "tests/integration/Tribe/Libs/Acf_Field_Models"
+    }
+  },
+  "scripts": {
+    "test:setup": "php ./bin/setup-tests.php",
+    "test": "./vendor/bin/codecept --config ./tests",
+    "test:integration": "@test run integration"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.5-dev"
+    }
+  }
+}
