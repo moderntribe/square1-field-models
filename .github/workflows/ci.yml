@@ -70,12 +70,6 @@ jobs:
           coverage: none
           tools: codeception, composer
 
-      - name: Configure Tests
-        run: | 
-          composer test:setup
-          rm -rf ./tests/.env
-          touch ./tests/.env
-
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -90,6 +84,12 @@ jobs:
 
       - name: Install composer dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+
+      - name: Configure Tests
+        run: |
+          composer test:setup
+          rm -rf ./tests/.env
+          touch ./tests/.env        
 
       - name: Run integration tests
         run: composer test:integration
