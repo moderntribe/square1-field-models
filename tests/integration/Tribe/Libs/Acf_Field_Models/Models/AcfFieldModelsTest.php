@@ -4,7 +4,7 @@ namespace Tribe\Libs\Acf_Field_Models\Models;
 
 use Tribe\Libs\Tests\Test_Case;
 
-class AcfFieldModelsTest extends Test_Case {
+final class AcfFieldModelsTest extends Test_Case {
 
 	public function test_link_field(): void {
 		$post_id = $this->factory()->post->create( [
@@ -65,6 +65,8 @@ class AcfFieldModelsTest extends Test_Case {
 
 		$file = new File( get_field( $field_key, $post_id ) );
 
+		$this->assertSame( $attachment_id, $file->id );
+
 		$this->assertSame( [
 			'id'          => $attachment_id,
 			'title'       => 'Test image',
@@ -94,11 +96,11 @@ class AcfFieldModelsTest extends Test_Case {
 			'post_status' => 'publish',
 		] );
 
-		$image     = codecept_data_dir( 'test.jpg' );
+		$image_file     = codecept_data_dir( 'test.jpg' );
 		$post_date = date( 'Y-m-d H:i:s', strtotime( 'now' ) );
 
 		$attachment_id = $this->factory()->attachment->create( [
-			'file'           => $image,
+			'file'           => $image_file,
 			'post_title'     => 'Test image',
 			'post_parent'    => $post_id,
 			'post_content'   => 'This is a test image description',
@@ -119,13 +121,15 @@ class AcfFieldModelsTest extends Test_Case {
 
 		$this->assertNotEmpty( update_field( $field_key, $attachment_id, $post_id ) );
 
-		$file = new Image( get_field( $field_key, $post_id ) );
+		$image = new Image( get_field( $field_key, $post_id ) );
+
+		$this->assertSame( $attachment_id, $image->id );
 
 		$this->assertSame( [
 			'id'          => $attachment_id,
 			'title'       => 'Test image',
 			'filename'    => 'test.jpg',
-			'filesize'    => filesize( $image ),
+			'filesize'    => filesize( $image_file ),
 			'url'         => 'http://square1-acf-field-models.tribe/wp-content/uploads//home/justin/projects/tribe/square1-acf-field-models/tests/./_data/test.jpg',
 			'link'        => "http://square1-acf-field-models.tribe/?attachment_id=$attachment_id",
 			'alt'         => '',
@@ -142,7 +146,46 @@ class AcfFieldModelsTest extends Test_Case {
 			'type'        => 'image',
 			'subtype'     => 'jpeg',
 			'icon'        => 'http://square1-acf-field-models.tribe/wp-includes/images/media/default.png',
-		], $file->toArray() );
+		], $image->toArray() );
+	}
+
+	public function test_user_field(): void {
+		$user_id = $this->factory()->user->create();
+		$post_id = $this->factory()->post->create( [
+			'post_status' => 'publish',
+		] );
+
+		$field_key = 'field_test_user';
+
+		acf_add_local_field( [
+			'key'           => $field_key,
+			'name'          => 'test_user',
+			'type'          => 'user',
+			'return_format' => 'array',
+		] );
+
+		$this->assertNotEmpty( update_field( $field_key, $user_id, $post_id ) );
+
+		$user = new User( get_field( $field_key, $post_id ) );
+
+		$wp_user = get_user_by( 'ID', $user_id );
+
+		$this->assertSame( $user_id, $user->ID );
+
+		$this->assertSame( [
+			'ID'               => $wp_user->ID,
+			'user_firstname'   => $wp_user->user_firstname,
+			'user_lastname'    => $wp_user->user_lastname,
+			'nickname'         => $wp_user->nickname,
+			'user_nicename'    => $wp_user->user_nicename,
+			'display_name'     => $wp_user->display_name,
+			'user_email'       => $wp_user->user_email,
+			'user_url'         => $wp_user->user_url,
+			'user_registered'  => $wp_user->user_registered,
+			'user_description' => $wp_user->user_description,
+			'user_avatar'      => get_avatar( $wp_user->ID ),
+		], $user->toArray() );
+
 	}
 
 }

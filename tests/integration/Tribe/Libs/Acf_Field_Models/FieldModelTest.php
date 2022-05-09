@@ -4,7 +4,7 @@ namespace Tribe\Libs\Acf_Field_Models;
 
 use Tribe\Libs\Tests\Test_Case;
 
-class ModelTest extends Test_Case {
+final class ModelTest extends Test_Case {
 
 	public function test_it_casts_values_based_on_defined_type(): void {
 		$test_field = new class extends Field_Model {
