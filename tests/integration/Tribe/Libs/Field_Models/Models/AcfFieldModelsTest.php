@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tribe\Libs\Acf_Field_Models\Models;
+namespace Tribe\Libs\Field_Models\Models;
 
 use Tribe\Libs\Tests\Test_Case;
 
@@ -72,8 +72,8 @@ final class AcfFieldModelsTest extends Test_Case {
 			'title'       => 'Test image',
 			'filename'    => 'test.jpg',
 			'filesize'    => filesize( $image ),
-			'url'         => 'http://square1-acf-field-models.tribe/wp-content/uploads/' . $image,
-			'link'        => "http://square1-acf-field-models.tribe/?attachment_id=$attachment_id",
+			'url'         => 'http://square1-field-models.tribe/wp-content/uploads/' . $image,
+			'link'        => "http://square1-field-models.tribe/?attachment_id=$attachment_id",
 			'alt'         => '',
 			'author'      => 0,
 			'description' => 'This is a test image description',
@@ -87,7 +87,7 @@ final class AcfFieldModelsTest extends Test_Case {
 			'mime_type'   => 'image/jpeg',
 			'type'        => 'image',
 			'subtype'     => 'jpeg',
-			'icon'        => 'http://square1-acf-field-models.tribe/wp-includes/images/media/default.png',
+			'icon'        => 'http://square1-field-models.tribe/wp-includes/images/media/default.png',
 		], $file->toArray() );
 	}
 
@@ -130,8 +130,8 @@ final class AcfFieldModelsTest extends Test_Case {
 			'title'       => 'Test image',
 			'filename'    => 'test.jpg',
 			'filesize'    => filesize( $image_file ),
-			'url'         => 'http://square1-acf-field-models.tribe/wp-content/uploads/' . $image_file,
-			'link'        => "http://square1-acf-field-models.tribe/?attachment_id=$attachment_id",
+			'url'         => 'http://square1-field-models.tribe/wp-content/uploads/' . $image_file,
+			'link'        => "http://square1-field-models.tribe/?attachment_id=$attachment_id",
 			'alt'         => '',
 			'author'      => 0,
 			'description' => 'This is a test image description',
@@ -145,7 +145,7 @@ final class AcfFieldModelsTest extends Test_Case {
 			'mime_type'   => 'image/jpeg',
 			'type'        => 'image',
 			'subtype'     => 'jpeg',
-			'icon'        => 'http://square1-acf-field-models.tribe/wp-includes/images/media/default.png',
+			'icon'        => 'http://square1-field-models.tribe/wp-includes/images/media/default.png',
 		], $image->toArray() );
 	}
 

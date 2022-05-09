@@ -1,5 +1,5 @@
 {
-  "name": "moderntribe/square1-acf-field-models",
+  "name": "moderntribe/square1-field-models",
   "type": "library",
   "description": "Data Transfer Objects (models) for Advanced custom fields",
   "license": "GPL-2.0-only",
@@ -24,13 +24,13 @@
   },
   "autoload": {
     "psr-4": {
-      "Tribe\\Libs\\Acf_Field_Models\\": "src/"
+      "Tribe\\Libs\\Field_Models\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
       "Tribe\\Libs\\Tests\\": "tests/_support/Classes",
-      "Tribe\\Libs\\Acf_Field_Models\\": "tests/integration/Tribe/Libs/Acf_Field_Models"
+      "Tribe\\Libs\\Field_Models\\": "tests/integration/Tribe/Libs/Field_Models"
     }
   },
   "scripts": {

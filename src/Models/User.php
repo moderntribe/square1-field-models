@@ -1,8 +1,8 @@
 <?php declare( strict_types=1 );
 
-namespace Tribe\Libs\Acf_Field_Models\Models;
+namespace Tribe\Libs\Field_Models\Models;
 
-use Tribe\Libs\Acf_Field_Models\Field_Model;
+use Tribe\Libs\Field_Models\Field_Model;
 
 class User extends Field_Model {
 
