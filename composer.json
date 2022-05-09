@@ -19,8 +19,6 @@
   "require-dev": {
     "larapack/dd": "^1.1",
     "nelexa/zip": "^4.0",
-    "brain/monkey": "2.*",
-    "opis/json-schema": "^2.3",
     "fakerphp/faker": "^1.19",
     "lucatume/wp-browser": "^3.1"
   },
