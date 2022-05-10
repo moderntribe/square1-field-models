@@ -38,14 +38,20 @@ class Field_Model extends FlexibleDataTransferObject {
 	 * @return void
 	 */
 	protected function castType( &$value, FieldValidator $fieldValidator ): void {
+		if ( empty( $fieldValidator->allowedTypes[0] ) ) {
+			return;
+		}
+
 		$type      = gettype( $value );
 		$firstType = $fieldValidator->allowedTypes[0];
 
-		// If not an allowed type, empty the value and cast as the first type, so it will
-		// use the default defined in the model.
 		if ( ! in_array( $type, $fieldValidator->allowedTypes ) ) {
-			$value = null;
-			settype( $value, $firstType );
+			if ( class_exists( $firstType ) ) {
+				$value = new $firstType( (array) $value );
+			} else {
+				$value = null;
+				settype( $value, $firstType );
+			}
 		}
 	}
 
