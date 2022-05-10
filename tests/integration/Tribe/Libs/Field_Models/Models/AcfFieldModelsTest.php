@@ -2,6 +2,10 @@
 
 namespace Tribe\Libs\Field_Models\Models;
 
+use Tribe\Libs\Field_Models\Field_Model;
+use Tribe\Libs\Tests\Child_One_Model;
+use Tribe\Libs\Tests\Child_Two_Model;
+use Tribe\Libs\Tests\Parent_Model;
 use Tribe\Libs\Tests\Test_Case;
 
 final class AcfFieldModelsTest extends Test_Case {
@@ -186,6 +190,164 @@ final class AcfFieldModelsTest extends Test_Case {
 			'user_avatar'      => get_avatar( $wp_user->ID ),
 		], $user->toArray() );
 
+	}
+
+	public function test_cta_field(): void {
+		$post_id = $this->factory()->post->create( [
+			'post_status' => 'publish',
+		] );
+
+		$field_key = 'field_test_cta';
+
+		acf_add_local_field( [
+			'key'           => $field_key,
+			'name'          => 'test_cta',
+			'type'          => 'link',
+			'return_format' => 'array',
+		] );
+
+		$data = [
+			'title'  => $this->faker->title(),
+			'url'    => $this->faker->url(),
+			'target' => '_blank',
+		];
+
+		$this->assertNotEmpty( update_field( $field_key, $data, $post_id ) );
+
+		$link = new Cta( [
+			'link'           => get_field( $field_key, $post_id ),
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		] );
+
+		$this->assertSame( [
+			'link'           => $data,
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		], $link->toArray() );
+	}
+
+	public function test_cta_field_with_different_submission_structures(): void {
+		$post_id = $this->factory()->post->create( [
+			'post_status' => 'publish',
+		] );
+
+		$field_key = 'field_test_cta';
+
+		acf_add_local_field( [
+			'key'           => $field_key,
+			'name'          => 'test_cta',
+			'type'          => 'link',
+			'return_format' => 'array',
+		] );
+
+		$empty_field_value = get_field( $field_key, $post_id );
+
+		// Random ACF return type
+		$this->assertNull( $empty_field_value );
+		$cta = new Cta( [ 'link' => $empty_field_value ] );
+
+		$this->assertInstanceOf( Field_Model::class, $cta );
+		$this->assertEquals( new Link(), $cta->link );
+
+		// boolean
+		$cta2 = new Cta( [ 'link' => false ] );
+		$this->assertInstanceOf( Field_Model::class, $cta2 );
+		$this->assertEquals( new Link(), $cta2->link );
+
+		// empty array
+		$cta3 = new Cta( [ 'link' => [] ] );
+		$this->assertInstanceOf( Field_Model::class, $cta3 );
+		$this->assertEquals( new Link(), $cta3->link );
+
+		// completely missing child definition
+		$cta4 = new Cta();
+		$this->assertInstanceOf( Field_Model::class, $cta4 );
+		$this->assertEquals( new Link(), $cta4->link );
+
+		// invalid and partial data
+		$cta5 = new Cta( [
+			'add_aria_label' => 'this should be a boolean',
+			'link'           => [
+				0               => 'mixed array',
+				'invalid_index' => 'I do not exist',
+				'url'           => 'https://tri.be',
+			],
+		] );
+		$this->assertInstanceOf( Field_Model::class, $cta5 );
+		$this->assertSame( [
+			'title'  => '',
+			'url'    => 'https://tri.be',
+			'target' => '_self',
+		], $cta5->link->toArray() );
+		$this->assertFalse( $cta5->add_aria_label );
+
+		// already created child instance
+		$cta6 = new Cta( [
+			'link'           => new Link( [
+				'title'  => 'Click me',
+				'url'    => 'https://tri.be',
+				'target' => '_blank',
+			] ),
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		] );
+		$this->assertInstanceOf( Field_Model::class, $cta6 );
+		$this->assertEquals( [
+			'title'  => 'Click me',
+			'url'    => 'https://tri.be',
+			'target' => '_blank',
+		], $cta6->link->toArray() );
+
+		// raw child object
+		$cta7 = new Cta( [
+			'link'           => (object) [
+				'title'  => 'Click me',
+				'url'    => 'https://tri.be',
+				'target' => '_blank',
+			],
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		] );
+		$this->assertInstanceOf( Field_Model::class, $cta7 );
+		$this->assertEquals( [
+			'title'  => 'Click me',
+			'url'    => 'https://tri.be',
+			'target' => '_blank',
+		], $cta7->link->toArray() );
+	}
+
+	public function test_nested_models(): void {
+		$data = [
+			'name'      => 'parent',
+			'child_one' => [
+				'name'      => 'Child One',
+				'child_two' => [
+					'name' => 'Child Two',
+				],
+			],
+		];
+
+		$model = new Parent_Model( $data );
+
+		$this->assertEquals( $data, $model->toArray() );
+		$this->assertInstanceOf( Child_One_Model::class, $model->child_one );
+		$this->assertInstanceOf( Child_Two_Model::class, $model->child_one->child_two );
+	}
+
+	public function test_empty_nested_models(): void {
+		$data = [
+			'name' => 'parent',
+		];
+
+		$model = new Parent_Model( $data );
+
+		$this->assertNotEquals( $data, $model->toArray() );
+		$this->assertSame( 'parent', $model->name );
+		$this->assertInstanceOf( Child_One_Model::class, $model->child_one );
+		$this->assertInstanceOf( Child_Two_Model::class, $model->child_one->child_two );
+		$this->assertSame( '', $model->child_one->name );
+		$this->assertSame( 'This is my default', $model->child_one->child_two->name );
 	}
 
 }
