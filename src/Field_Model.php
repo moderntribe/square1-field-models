@@ -2,14 +2,16 @@
 
 namespace Tribe\Libs\Field_Models;
 
+use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\FieldValidator;
 use Spatie\DataTransferObject\FlexibleDataTransferObject;
 use Spatie\DataTransferObject\ValueCaster;
+use Throwable;
 
 class Field_Model extends FlexibleDataTransferObject {
 
 	/**
-	 * Overload the castValue method and automatically cast values to their type.
+	 * Override the castValue method and automatically cast values to their type.
 	 *
 	 * @param  \Spatie\DataTransferObject\ValueCaster     $valueCaster
 	 * @param  \Spatie\DataTransferObject\FieldValidator  $fieldValidator
@@ -18,41 +20,42 @@ class Field_Model extends FlexibleDataTransferObject {
 	 * @return mixed
 	 */
 	protected function castValue( ValueCaster $valueCaster, FieldValidator $fieldValidator, $value ) {
-		$this->castType( $value, $fieldValidator );
+		$value = $this->castType( $value, $fieldValidator );
 
-		if ( is_array( $value ) ) {
-			return $valueCaster->cast( $value, $fieldValidator );
-		}
-
-		return $value;
+		return parent::castValue( $valueCaster, $fieldValidator, $value );
 	}
 
 	/**
-	 * Attempt to cast scalar values to their proper type as ACF will return field data without
-	 * respecting PHP types, e.g. if something should be an empty string: '', it may be a boolean
-	 * false.
+	 * Attempt to automatically cast values before the DTO is validated upstream which
+	 * would normally fail. If the type isn't valid, we'll just "null" it out and set it
+	 * to the expected type to allow the default value to be used.
 	 *
 	 * @param  mixed                                      $value
 	 * @param  \Spatie\DataTransferObject\FieldValidator  $fieldValidator
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-	protected function castType( &$value, FieldValidator $fieldValidator ): void {
-		if ( empty( $fieldValidator->allowedTypes[0] ) ) {
-			return;
+	protected function castType( $value, FieldValidator $fieldValidator ) {
+		if ( $fieldValidator->isValidType( $value ) ) {
+			return $value;
 		}
 
-		$type      = gettype( $value );
-		$firstType = $fieldValidator->allowedTypes[0];
-
-		if ( ! in_array( $type, $fieldValidator->allowedTypes ) ) {
-			if ( class_exists( $firstType ) ) {
-				$value = new $firstType( (array) $value );
-			} else {
+		foreach ( $fieldValidator->allowedTypes as $type ) {
+			if ( is_subclass_of( $type, DataTransferObject::class ) ) {
+				try {
+					$value = new $type( (array) $value );
+					break;
+				} catch ( Throwable $e ) {
+					continue;
+				}
+			} elseif ( is_scalar( $type ) || is_null( $type ) ) {
 				$value = null;
-				settype( $value, $firstType );
+				settype( $value, $type );
+				break;
 			}
 		}
+
+		return $value;
 	}
 
 }
