@@ -71,28 +71,10 @@ final class AcfFieldModelsTest extends Test_Case {
 
 		$this->assertSame( $attachment_id, $file->id );
 
-		$this->assertSame( [
-			'id'          => $attachment_id,
-			'title'       => 'Test image',
-			'filename'    => 'test.jpg',
-			'filesize'    => filesize( $image ),
-			'url'         => 'http://square1-field-models.tribe/wp-content/uploads/' . $image,
-			'link'        => "http://square1-field-models.tribe/?attachment_id=$attachment_id",
-			'alt'         => '',
-			'author'      => 0,
-			'description' => 'This is a test image description',
-			'caption'     => 'This is a test image caption',
-			'name'        => 'test-image',
-			'status'      => 'inherit',
-			'uploaded_to' => $post_id,
-			'date'        => $post_date,
-			'modified'    => $post_date,
-			'menu_order'  => 0,
-			'mime_type'   => 'image/jpeg',
-			'type'        => 'image',
-			'subtype'     => 'jpeg',
-			'icon'        => 'http://square1-field-models.tribe/wp-includes/images/media/default.png',
-		], $file->toArray() );
+		$attachment_data = $this->get_acf_attachment_data( $attachment_id );
+		$this->assertNotEmpty( $attachment_data );
+
+		$this->assertEqualsCanonicalizing( $attachment_data, $file->toArray() );
 	}
 
 	public function test_image_field(): void {
@@ -129,28 +111,10 @@ final class AcfFieldModelsTest extends Test_Case {
 
 		$this->assertSame( $attachment_id, $image->id );
 
-		$this->assertSame( [
-			'id'          => $attachment_id,
-			'title'       => 'Test image',
-			'filename'    => 'test.jpg',
-			'filesize'    => filesize( $image_file ),
-			'url'         => 'http://square1-field-models.tribe/wp-content/uploads/' . $image_file,
-			'link'        => "http://square1-field-models.tribe/?attachment_id=$attachment_id",
-			'alt'         => '',
-			'author'      => 0,
-			'description' => 'This is a test image description',
-			'caption'     => 'This is a test image caption',
-			'name'        => 'test-image',
-			'status'      => 'inherit',
-			'uploaded_to' => $post_id,
-			'date'        => $post_date,
-			'modified'    => $post_date,
-			'menu_order'  => 0,
-			'mime_type'   => 'image/jpeg',
-			'type'        => 'image',
-			'subtype'     => 'jpeg',
-			'icon'        => 'http://square1-field-models.tribe/wp-includes/images/media/default.png',
-		], $image->toArray() );
+		$attachment_data = $this->get_acf_attachment_data( $attachment_id );
+		$this->assertNotEmpty( $attachment_data );
+
+		$this->assertEqualsCanonicalizing( $attachment_data, $image->toArray() );
 	}
 
 	public function test_user_field(): void {
@@ -348,6 +312,23 @@ final class AcfFieldModelsTest extends Test_Case {
 		$this->assertInstanceOf( Child_Two_Model::class, $model->child_one->child_two );
 		$this->assertSame( '', $model->child_one->name );
 		$this->assertSame( 'This is my default', $model->child_one->child_two->name );
+	}
+
+	/**
+	 * The attachment data that ACF creates, we'll use it to compare to
+	 * our field models.
+	 *
+	 * @param  int  $attachment_id
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_acf_attachment_data( int $attachment_id ): array {
+		$data = acf_get_attachment( $attachment_id );
+
+		// Remove the duplicate ID. ACF has both ID and id, we just need one.
+		unset( $data['ID'] );
+
+		return $data;
 	}
 
 }
