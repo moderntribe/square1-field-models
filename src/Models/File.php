@@ -27,4 +27,17 @@ class File extends Field_Model {
 	public string $subtype = '';
 	public string $icon = '';
 
+	/**
+	 * If image or video file.
+	 */
+	public int $width = 0;
+	public int $height = 0;
+
+	/**
+	 * Sizes if the attachment is an image, video or audio file.
+	 *
+	 * @var array<string, mixed>
+	 */
+	public array $sizes = [];
+
 }
