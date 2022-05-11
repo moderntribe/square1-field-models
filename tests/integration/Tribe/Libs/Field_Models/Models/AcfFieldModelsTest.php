@@ -74,7 +74,7 @@ final class AcfFieldModelsTest extends Test_Case {
 		$attachment_data = $this->get_acf_attachment_data( $attachment_id );
 		$this->assertNotEmpty( $attachment_data );
 
-		$this->assertEqualsCanonicalizing( $attachment_data, $file->toArray() );
+		$this->assertEquals( $attachment_data, $file->toArray() );
 	}
 
 	public function test_image_field(): void {
@@ -114,7 +114,7 @@ final class AcfFieldModelsTest extends Test_Case {
 		$attachment_data = $this->get_acf_attachment_data( $attachment_id );
 		$this->assertNotEmpty( $attachment_data );
 
-		$this->assertEqualsCanonicalizing( $attachment_data, $image->toArray() );
+		$this->assertEquals( $attachment_data, $image->toArray() );
 	}
 
 	public function test_user_field(): void {
