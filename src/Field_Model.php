@@ -49,7 +49,7 @@ class Field_Model extends FlexibleDataTransferObject {
 				} catch ( Throwable $e ) {
 					continue;
 				}
-			} elseif ( is_scalar( $type ) || is_null( $type ) ) {
+			} else {
 				// This is supposed to be an array of models, e.g. \Some_Model[]
 				if ( ! empty( $fieldValidator->allowedArrayTypes[ $key ] ) ) {
 					// Ensure all empty values are an array
