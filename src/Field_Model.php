@@ -52,7 +52,7 @@ class Field_Model extends FlexibleDataTransferObject {
 			} elseif ( is_scalar( $type ) || is_null( $type ) ) {
 				// This is supposed to be an array of models, e.g. \Some_Model[]
 				if ( ! empty( $fieldValidator->allowedArrayTypes[ $key ] ) ) {
-					// ACF passed some random type, ensure it's cast to an array
+					// Ensure all empty values are an array
 					if ( empty( $value ) ) {
 						$value = [];
 					}
@@ -62,7 +62,12 @@ class Field_Model extends FlexibleDataTransferObject {
 					break;
 				}
 
-				// If we made it here, this is a true scalar type, allow PHP to cast it.
+				// ACF passed some random type, reset the value to an empty array, so we don't
+				// get unexpected values.
+				if ( $type === 'array' && ! is_array( $value ) ) {
+					$value = [];
+				}
+
 				settype( $value, $type );
 				break;
 			}

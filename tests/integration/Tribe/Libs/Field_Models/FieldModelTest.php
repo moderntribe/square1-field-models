@@ -33,7 +33,7 @@ final class ModelTest extends Test_Case {
 		// It should utilize the defaults as defined in the model,
 		// besides parsedData that was passed correctly.
 		$this->assertSame( [
-			'id'      => 0,
+			'id'      => 1,
 			'message' => '',
 			'data'    => [],
 			'parsedData' => [
