@@ -2,6 +2,7 @@
 
 namespace Tribe\Libs\Field_Models\Models;
 
+use stdClass;
 use Tribe\Libs\Field_Models\Field_Model;
 use Tribe\Libs\Tests\Child_One_Model;
 use Tribe\Libs\Tests\Child_Two_Model;
@@ -284,6 +285,19 @@ final class AcfFieldModelsTest extends Test_Case {
 			'url'    => 'https://tri.be',
 			'target' => '_blank',
 		], $cta7->link->toArray() );
+
+		// Blank object in place of an array
+		$cta8 = new Cta( [
+			'link'           => new stdClass(),
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		] );
+		$this->assertInstanceOf( Field_Model::class, $cta8 );
+		$this->assertEquals( [
+			'title'  => '',
+			'url'    => '',
+			'target' => '_self', // the default
+		], $cta8->link->toArray() );
 	}
 
 	public function test_nested_models(): void {
