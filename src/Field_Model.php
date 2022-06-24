@@ -20,7 +20,7 @@ class Field_Model extends FlexibleDataTransferObject {
 	 * @return mixed
 	 */
 	protected function castValue( ValueCaster $valueCaster, FieldValidator $fieldValidator, $value ) {
-		$value = $this->castType( $value, $fieldValidator );
+		$value = $this->castType( $valueCaster, $fieldValidator, $value );
 
 		return parent::castValue( $valueCaster, $fieldValidator, $value );
 	}
@@ -30,17 +30,18 @@ class Field_Model extends FlexibleDataTransferObject {
 	 * would normally fail. If the type isn't valid, we'll just "null" it out and set it
 	 * to the expected type to allow the default value to be used.
 	 *
-	 * @param  mixed                                      $value
+	 * @param  \Spatie\DataTransferObject\ValueCaster     $valueCaster
 	 * @param  \Spatie\DataTransferObject\FieldValidator  $fieldValidator
+	 * @param  mixed                                      $value
 	 *
 	 * @return mixed
 	 */
-	protected function castType( $value, FieldValidator $fieldValidator ) {
+	protected function castType( ValueCaster $valueCaster, FieldValidator $fieldValidator, $value ) {
 		if ( $fieldValidator->isValidType( $value ) ) {
 			return $value;
 		}
 
-		foreach ( $fieldValidator->allowedTypes as $type ) {
+		foreach ( $fieldValidator->allowedTypes as $key => $type ) {
 			if ( is_subclass_of( $type, DataTransferObject::class ) ) {
 				try {
 					$value = new $type( (array) $value );
@@ -49,7 +50,19 @@ class Field_Model extends FlexibleDataTransferObject {
 					continue;
 				}
 			} elseif ( is_scalar( $type ) || is_null( $type ) ) {
-				$value = null;
+				// This is supposed to be an array of models, e.g. \Some_Model[]
+				if ( ! empty( $fieldValidator->allowedArrayTypes[ $key ] ) ) {
+					// ACF passed some random type, ensure it's cast to an array
+					if ( empty( $value ) ) {
+						$value = [];
+					}
+
+					// Pass arrays back up to the parent class for casting to models
+					$value = parent::castValue( $valueCaster, $fieldValidator, $value );
+					break;
+				}
+
+				// If we made it here, this is a true scalar type, allow PHP to cast it.
 				settype( $value, $type );
 				break;
 			}
