@@ -27,8 +27,9 @@ class Field_Model extends FlexibleDataTransferObject {
 
 	/**
 	 * Attempt to automatically cast values before the DTO is validated upstream which
-	 * would normally fail. If the type isn't valid, we'll just "null" it out and set it
-	 * to the expected type to allow the default value to be used.
+	 * would normally fail. If the type isn't valid, we'll attempt to cast it to the correct type.
+	 * If we expect an array and the type doesn't match, we'll just reset the value, so we don't
+	 * pass unexpected values to nested DTO's.
 	 *
 	 * @param  \Spatie\DataTransferObject\ValueCaster     $valueCaster
 	 * @param  \Spatie\DataTransferObject\FieldValidator  $fieldValidator
@@ -50,14 +51,14 @@ class Field_Model extends FlexibleDataTransferObject {
 					continue;
 				}
 			} else {
-				// This is supposed to be an array of models, e.g. \Some_Model[]
+				// This is supposed to be an array of models, e.g. \Some_Model[].
 				if ( ! empty( $fieldValidator->allowedArrayTypes[ $key ] ) ) {
-					// Ensure all empty values are an array
+					// Ensure all empty values are an array.
 					if ( empty( $value ) ) {
 						$value = [];
 					}
 
-					// Pass arrays back up to the parent class for casting to models
+					// Pass arrays back up to the parent class which handles casting arrays to models.
 					$value = parent::castValue( $valueCaster, $fieldValidator, $value );
 					break;
 				}
