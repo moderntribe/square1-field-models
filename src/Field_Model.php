@@ -58,8 +58,14 @@ class Field_Model extends FlexibleDataTransferObject {
 						$value = [];
 					}
 
-					// Pass arrays back up to the parent class which handles casting arrays to models.
+					// Try to cast to a collection first
+					$values     = $valueCaster->castCollection( $value, $fieldValidator->allowedArrayTypes );
+					$collection = $valueCaster->collectionType( $fieldValidator->allowedTypes );
+					$value      = $collection ? new $collection( $values ) : $values;
+
+					// Pass arrays back up to the parent class which handles casting arrays to other DTO's.
 					$value = parent::castValue( $valueCaster, $fieldValidator, $value );
+
 					break;
 				}
 

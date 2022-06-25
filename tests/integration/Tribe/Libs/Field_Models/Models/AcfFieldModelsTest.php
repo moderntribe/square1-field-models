@@ -3,9 +3,11 @@
 namespace Tribe\Libs\Field_Models\Models;
 
 use stdClass;
+use Tribe\Libs\Field_Models\Collections\User_Collection;
 use Tribe\Libs\Field_Models\Field_Model;
 use Tribe\Libs\Tests\Child_One_Model;
 use Tribe\Libs\Tests\Child_Two_Model;
+use Tribe\Libs\Tests\Collection_Model;
 use Tribe\Libs\Tests\Parent_Array_Model;
 use Tribe\Libs\Tests\Parent_Array_Multi_Level_Model;
 use Tribe\Libs\Tests\Parent_Model;
@@ -445,6 +447,57 @@ final class AcfFieldModelsTest extends Test_Case {
 
 		$this->assertIsArray( $model->children );
 		$this->assertEmpty( $model->children );
+	}
+
+	public function test_collection_casting(): void {
+		$model = new Collection_Model( [
+			'users' => [
+				[
+					'ID'             => 1,
+					'user_firstname' => 'User 1',
+					'user_email'     => 'user1@test.com',
+				],
+				[
+					'ID'             => 2,
+					'user_firstname' => 'User 2',
+					'user_email'     => 'user2@test.com',
+				],
+				[
+					'ID'             => 3,
+					'user_firstname' => 'User 3',
+					'user_email'     => 'user3@test.com',
+				],
+			],
+		] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 3, $model->users );
+
+		foreach ( $model->users as $key => $user ) {
+			$k = ++$key;
+			$this->assertSame( $k, $user->ID );
+			$this->assertSame( sprintf( 'User %d', $k ), $user->user_firstname );
+			$this->assertSame( sprintf( 'user%d@test.com', $k ), $user->user_email );
+		}
+
+		$model = new Collection_Model( [] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
+
+		$model = new Collection_Model( [
+			'users' => false,
+		] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
+
+		$model = new Collection_Model( [
+			'users' => '',
+		] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
 	}
 
 	/**
