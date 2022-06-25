@@ -2,11 +2,15 @@
 
 namespace Tribe\Libs\Field_Models\Models;
 
+use stdClass;
 use Tribe\Libs\Field_Models\Field_Model;
 use Tribe\Libs\Tests\Child_One_Model;
 use Tribe\Libs\Tests\Child_Two_Model;
+use Tribe\Libs\Tests\Parent_Array_Model;
+use Tribe\Libs\Tests\Parent_Array_Multi_Level_Model;
 use Tribe\Libs\Tests\Parent_Model;
 use Tribe\Libs\Tests\Test_Case;
+use Tribe\Libs\Tests\Title_Model;
 
 final class AcfFieldModelsTest extends Test_Case {
 
@@ -244,7 +248,9 @@ final class AcfFieldModelsTest extends Test_Case {
 			'url'    => 'https://tri.be',
 			'target' => '_self',
 		], $cta5->link->toArray() );
-		$this->assertFalse( $cta5->add_aria_label );
+
+		// PHP converted this into true through type juggling of the 'this should be a boolean' string.
+		$this->assertTrue( $cta5->add_aria_label );
 
 		// already created child instance
 		$cta6 = new Cta( [
@@ -279,6 +285,19 @@ final class AcfFieldModelsTest extends Test_Case {
 			'url'    => 'https://tri.be',
 			'target' => '_blank',
 		], $cta7->link->toArray() );
+
+		// Blank object in place of an array
+		$cta8 = new Cta( [
+			'link'           => new stdClass(),
+			'add_aria_label' => true,
+			'aria_label'     => 'Screen reader text',
+		] );
+		$this->assertInstanceOf( Field_Model::class, $cta8 );
+		$this->assertEquals( [
+			'title'  => '',
+			'url'    => '',
+			'target' => '_self', // the default
+		], $cta8->link->toArray() );
 	}
 
 	public function test_nested_models(): void {
@@ -312,6 +331,120 @@ final class AcfFieldModelsTest extends Test_Case {
 		$this->assertInstanceOf( Child_Two_Model::class, $model->child_one->child_two );
 		$this->assertSame( '', $model->child_one->name );
 		$this->assertSame( 'This is my default', $model->child_one->child_two->name );
+	}
+
+	public function test_array_to_model_casting_one_level_deep(): void {
+		$data = [
+			'children' => [
+				[
+					'name' => 'Child 0',
+				],
+				[
+					'name' => 'Child 1',
+				],
+				[
+					'name' => 'Child 2',
+				],
+			],
+		];
+
+		$model = new Parent_Array_Model( $data );
+
+		foreach ( $model->children as $key => $child ) {
+			$this->assertInstanceOf( Child_Two_Model::class, $child );
+			$this->assertSame( sprintf( 'Child %d', $key ), $child->name );
+		}
+	}
+
+	public function test_array_to_model_casting_multiple_level_deep(): void {
+		$data = [
+			'parents' => [
+				[
+					'children' => [
+						[
+							'name' => 'Child 0',
+						],
+						[
+							'name' => 'Child 1',
+						],
+						[
+							'name' => 'Child 2',
+						],
+					],
+				],
+				[
+					'children' => [
+						[
+							'name' => 'Child 0',
+						],
+						[
+							'name' => 'Child 1',
+						],
+						[
+							'name' => 'Child 2',
+						],
+					],
+				],
+			],
+			'titles' => [
+				[
+					'name' => 'Title 1',
+				],
+				[
+					'name' => 'Title 2',
+					'tag'  => 'h2',
+				],
+				[
+					'name' => 'Title 3',
+					'tag'  => 'h3',
+				],
+			],
+		];
+
+		$model = new Parent_Array_Multi_Level_Model( $data );
+
+		$this->assertCount( 2, $model->parents );
+
+		foreach ( $model->parents as $child ) {
+
+			$this->assertInstanceOf( Parent_Array_Model::class, $child );
+			$this->assertCount( 3, $child->children );
+
+			foreach ( $child->children as $key => $grand_child ) {
+				$this->assertInstanceOf( Child_Two_Model::class, $grand_child );
+				$this->assertSame( sprintf( 'Child %d', $key ), $grand_child->name );
+			}
+		}
+
+		$this->assertCount( 3, $model->titles );
+
+		foreach ( $model->titles as $key => $title ) {
+			$k = ++$key;
+			$this->assertInstanceOf( Title_Model::class, $title );
+			$this->assertSame( sprintf( 'Title %d', $k ), $title->name );
+			$this->assertSame( sprintf( 'h%d', $k ), $title->tag );
+		}
+	}
+
+	public function test_array_to_model_casting_with_missing_values(): void {
+		$model = new Parent_Array_Model( [] );
+
+		$this->assertIsArray( $model->children );
+		$this->assertEmpty( $model->children );
+
+		$model = new Parent_Array_Model( [
+			'children' => false,
+		] );
+
+		$this->assertIsArray( $model->children );
+		$this->assertEmpty( $model->children );
+
+		$model = new Parent_Array_Model( [
+			'children' => '',
+		] );
+
+		$this->assertIsArray( $model->children );
+		$this->assertEmpty( $model->children );
 	}
 
 	/**

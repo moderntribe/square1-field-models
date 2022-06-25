@@ -20,27 +20,29 @@ class Field_Model extends FlexibleDataTransferObject {
 	 * @return mixed
 	 */
 	protected function castValue( ValueCaster $valueCaster, FieldValidator $fieldValidator, $value ) {
-		$value = $this->castType( $value, $fieldValidator );
+		$value = $this->castType( $valueCaster, $fieldValidator, $value );
 
 		return parent::castValue( $valueCaster, $fieldValidator, $value );
 	}
 
 	/**
 	 * Attempt to automatically cast values before the DTO is validated upstream which
-	 * would normally fail. If the type isn't valid, we'll just "null" it out and set it
-	 * to the expected type to allow the default value to be used.
+	 * would normally fail. If the type isn't valid, we'll attempt to cast it to the correct type.
+	 * If we expect an array and the type doesn't match, we'll just reset the value, so we don't
+	 * pass unexpected values to nested DTO's.
 	 *
-	 * @param  mixed                                      $value
+	 * @param  \Spatie\DataTransferObject\ValueCaster     $valueCaster
 	 * @param  \Spatie\DataTransferObject\FieldValidator  $fieldValidator
+	 * @param  mixed                                      $value
 	 *
 	 * @return mixed
 	 */
-	protected function castType( $value, FieldValidator $fieldValidator ) {
+	protected function castType( ValueCaster $valueCaster, FieldValidator $fieldValidator, $value ) {
 		if ( $fieldValidator->isValidType( $value ) ) {
 			return $value;
 		}
 
-		foreach ( $fieldValidator->allowedTypes as $type ) {
+		foreach ( $fieldValidator->allowedTypes as $key => $type ) {
 			if ( is_subclass_of( $type, DataTransferObject::class ) ) {
 				try {
 					$value = new $type( (array) $value );
@@ -48,8 +50,25 @@ class Field_Model extends FlexibleDataTransferObject {
 				} catch ( Throwable $e ) {
 					continue;
 				}
-			} elseif ( is_scalar( $type ) || is_null( $type ) ) {
-				$value = null;
+			} else {
+				// This is supposed to be an array of models, e.g. \Some_Model[].
+				if ( ! empty( $fieldValidator->allowedArrayTypes[ $key ] ) ) {
+					// Ensure all empty values are an array.
+					if ( empty( $value ) ) {
+						$value = [];
+					}
+
+					// Pass arrays back up to the parent class which handles casting arrays to models.
+					$value = parent::castValue( $valueCaster, $fieldValidator, $value );
+					break;
+				}
+
+				// ACF passed some random type, reset the value to an empty array, so we don't
+				// get unexpected values.
+				if ( $type === 'array' && ! is_array( $value ) ) {
+					$value = [];
+				}
+
 				settype( $value, $type );
 				break;
 			}
