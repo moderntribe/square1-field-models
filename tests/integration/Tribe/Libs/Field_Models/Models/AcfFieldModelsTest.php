@@ -479,6 +479,25 @@ final class AcfFieldModelsTest extends Test_Case {
 			$this->assertSame( sprintf( 'User %d', $k ), $user->user_firstname );
 			$this->assertSame( sprintf( 'user%d@test.com', $k ), $user->user_email );
 		}
+
+		$model = new Collection_Model( [] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
+
+		$model = new Collection_Model( [
+			'users' => false,
+		] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
+
+		$model = new Collection_Model( [
+			'users' => '',
+		] );
+
+		$this->assertInstanceOf( User_Collection::class, $model->users );
+		$this->assertCount( 0, $model->users );
 	}
 
 	/**
