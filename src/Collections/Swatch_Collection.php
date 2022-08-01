@@ -48,11 +48,13 @@ class Swatch_Collection extends DataTransferObjectCollection {
 	public function format_for_blocks(): array {
 		$swatches = $this->toArray();
 
-		foreach ( $swatches as $swatch ) {
-			$swatch['name'] = esc_attr( $swatch['name'] );
-		}
+		return array_reduce( $swatches, static function ( array $carry, array $swatch ) {
+			$swatch['name'] = esc_html( $swatch['name'] );
 
-		return $swatches;
+			$carry[] = $swatch;
+
+			return $carry;
+		}, [] );
 	}
 
 	/**

@@ -69,8 +69,24 @@ final class CollectionTest extends Test_Case {
 
 		$collection = Swatch_Collection::create( $swatches );
 
-		// Block formatting is exactly as created.
-		$this->assertEquals( $swatches, $collection->format_for_blocks() );
+		// Block formatting is exactly as created, but using integers as key.
+		$this->assertEquals( [
+			[
+				'color' => '#ffffff',
+				'name'  => 'White',
+				'slug'  => 'white',
+			],
+			[
+				'color' => '#000000',
+				'name'  => 'Black',
+				'slug'  => 'black',
+			],
+			[
+				'color' => '#696969',
+				'name'  => 'Grey',
+				'slug'  => 'grey',
+			],
+		], $collection->format_for_blocks() );
 
 		$this->assertEquals( [
 			'color' => '#000000',
