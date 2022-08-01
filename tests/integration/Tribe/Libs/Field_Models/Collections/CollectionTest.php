@@ -69,7 +69,7 @@ final class CollectionTest extends Test_Case {
 
 		$collection = Swatch_Collection::create( $swatches );
 
-		// Block formatting is exactly as created, but using integers as key.
+		// Block formatting is exactly as created, but using integers as keys and the `name` key is escaped.
 		$this->assertEquals( [
 			[
 				'color' => '#ffffff',
