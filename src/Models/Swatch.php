@@ -5,7 +5,7 @@ namespace Tribe\Libs\Field_Models\Models;
 use Tribe\Libs\Field_Models\Field_Model;
 
 /**
- * Represents a color swatch/palette.
+ * Represents a color swatch.
  *
  * @link https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#block-color-palettes
  */

@@ -5,6 +5,9 @@ namespace Tribe\Libs\Field_Models\Collections;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 use Tribe\Libs\Field_Models\Models\Swatch;
 
+/**
+ * A collection of Swatch objects/aka a color palette.
+ */
 class Swatch_Collection extends DataTransferObjectCollection {
 
 	public static function create( array $swatches ): Swatch_Collection {
