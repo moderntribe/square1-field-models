@@ -12,7 +12,7 @@ use Tribe\Libs\Field_Models\Field_Model;
 class Swatch extends Field_Model {
 
 	/**
-	 * The hex color code.
+	 * The color, in a supported format.
 	 *
 	 * @example #ffffff, rgb(255,0,0), rgba(255,0,0, 1), hsl(0,100%,50%)
 	 */
