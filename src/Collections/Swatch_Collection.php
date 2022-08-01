@@ -49,7 +49,7 @@ class Swatch_Collection extends DataTransferObjectCollection {
 		$swatches = $this->toArray();
 
 		return array_reduce( $swatches, static function ( array $carry, array $swatch ) {
-			$swatch['name'] = esc_html( $swatch['name'] );
+			$swatch['name'] = esc_attr( $swatch['name'] );
 
 			$carry[] = $swatch;
 
