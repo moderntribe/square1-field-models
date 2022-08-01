@@ -48,17 +48,17 @@ final class AcfFieldModelsTest extends Test_Case {
 		$swatches = [
 			'white' => [
 				'color' => '#ffffff',
-				'label' => esc_html__( 'White', 'tribe' ),
+				'name' => __( 'White', 'tribe' ),
 				'slug'  => 'white',
 			],
 			'black' => [
 				'color' => '#000000',
-				'label' => esc_html__( 'Black', 'tribe' ),
+				'name' => __( 'Black', 'tribe' ),
 				'slug'  => 'black',
 			],
 			'grey' => [
 				'color' => '#696969',
-				'label' => esc_html__( 'Grey', 'tribe' ),
+				'name' => __( 'Grey', 'tribe' ),
 				'slug'  => 'grey',
 			],
 		];

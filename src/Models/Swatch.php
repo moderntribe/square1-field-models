@@ -5,7 +5,9 @@ namespace Tribe\Libs\Field_Models\Models;
 use Tribe\Libs\Field_Models\Field_Model;
 
 /**
- * Represents a color swatch.
+ * Represents a color swatch/palette.
+ *
+ * @link https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#block-color-palettes
  */
 class Swatch extends Field_Model {
 
@@ -19,9 +21,9 @@ class Swatch extends Field_Model {
 	/**
 	 * The i18n translated color label.
 	 *
-	 * @example esc_html__( 'White', 'tribe' )
+	 * @example __( 'White', 'tribe' )
 	 */
-	public string $label;
+	public string $name;
 
 	/**
 	 * The uniquely named slug for this swatch.

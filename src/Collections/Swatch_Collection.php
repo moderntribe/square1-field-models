@@ -38,12 +38,38 @@ class Swatch_Collection extends DataTransferObjectCollection {
 	}
 
 	/**
-	 * Format a swatch collection for the ACF swatch field.
+	 * Formats the colors as `[ 'name' => <name>, 'slug' => <slug>, 'color' => <color> ]` and adds
+	 * proper escaping.
 	 *
-	 * @return array
+	 * @link https://developer.wordpress.org/block-editor/developers/themes/theme-support/#block-color-palettes
+	 *
+	 * @return array<array{name: string, slug: string, color: string}>
+	 */
+	public function format_for_blocks(): array {
+		$swatches = $this->toArray();
+
+		foreach ( $swatches as $swatch ) {
+			$swatch['name'] = esc_attr( $swatch['name'] );
+		}
+
+		return $swatches;
+	}
+
+	/**
+	 * Format a swatch collection for the ACF swatch field and escape the label.
+	 *
+	 * @example `[ <color> => <name> ]`
+	 *
+	 * @return array<string, string>
 	 */
 	public function format_for_acf(): array {
-		return array_column( $this->items(), 'label', 'color' );
+		$swatches = $this->toArray();
+
+		return array_reduce( $swatches, static function ( array $carry, array $swatch ) {
+			$carry[ $swatch['color'] ] = esc_html( $swatch['name'] );
+
+			return $carry;
+		}, [] );
 	}
 
 	/**
