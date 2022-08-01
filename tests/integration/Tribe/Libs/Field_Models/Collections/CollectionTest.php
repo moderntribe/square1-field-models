@@ -52,17 +52,17 @@ final class CollectionTest extends Test_Case {
 		$swatches = [
 			'white' => [
 				'color' => '#ffffff',
-				'name' => __( 'White', 'tribe' ),
+				'name'  => __( 'White', 'tribe' ),
 				'slug'  => 'white',
 			],
 			'black' => [
 				'color' => '#000000',
-				'name' => __( 'Black', 'tribe' ),
+				'name'  => __( 'Black', 'tribe' ),
 				'slug'  => 'black',
 			],
-			'grey' => [
+			'grey'  => [
 				'color' => '#696969',
-				'name' => __( 'Grey', 'tribe' ),
+				'name'  => __( 'Grey', 'tribe' ),
 				'slug'  => 'grey',
 			],
 		];
@@ -91,19 +91,19 @@ final class CollectionTest extends Test_Case {
 		$this->assertEquals( [
 			'color' => '#000000',
 			'slug'  => 'black',
-			'name' => 'Black'
+			'name'  => 'Black',
 		], $collection->get_by_value( '#000000' )->toArray() );
 
 		$this->assertEquals( [
 			'color' => '#696969',
 			'slug'  => 'grey',
-			'name' => 'Grey'
+			'name'  => 'Grey',
 		], $collection->get_by_value( '#696969' )->toArray() );
 
 		$this->assertEquals( [
 			'color' => '#ffffff',
 			'slug'  => 'white',
-			'name' => 'White'
+			'name'  => 'White',
 		], $collection->get_by_value( '#ffffff' )->toArray() );
 
 		$white = $collection->offsetGet( 'white' );
@@ -132,4 +132,5 @@ final class CollectionTest extends Test_Case {
 		$this->assertNull( $subset_collection->get_by_value( '#000000' ) );
 
 	}
+
 }
