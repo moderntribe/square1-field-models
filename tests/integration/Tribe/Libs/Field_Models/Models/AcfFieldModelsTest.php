@@ -2,7 +2,7 @@
 
 namespace Tribe\Libs\Field_Models\Models;
 
-use stdClass;
+use Tribe\Libs\Field_Models\Collections\Swatch_Collection;
 use Tribe\Libs\Field_Models\Collections\User_Collection;
 use Tribe\Libs\Field_Models\Field_Model;
 use Tribe\Libs\Tests\Child_One_Model;
@@ -13,6 +13,7 @@ use Tribe\Libs\Tests\Parent_Array_Multi_Level_Model;
 use Tribe\Libs\Tests\Parent_Model;
 use Tribe\Libs\Tests\Test_Case;
 use Tribe\Libs\Tests\Title_Model;
+use stdClass;
 
 final class AcfFieldModelsTest extends Test_Case {
 
@@ -41,6 +42,45 @@ final class AcfFieldModelsTest extends Test_Case {
 		$link = new Link( get_field( $field_key, $post_id ) );
 
 		$this->assertSame( $data, $link->toArray() );
+	}
+
+	public function test_swatch_field_choices(): void {
+		$swatches = [
+			'white' => [
+				'color' => '#ffffff',
+				'label' => esc_html__( 'White', 'tribe' ),
+				'slug'  => 'white',
+			],
+			'black' => [
+				'color' => '#000000',
+				'label' => esc_html__( 'Black', 'tribe' ),
+				'slug'  => 'black',
+			],
+			'grey' => [
+				'color' => '#696969',
+				'label' => esc_html__( 'Grey', 'tribe' ),
+				'slug'  => 'grey',
+			],
+		];
+
+		$collection = Swatch_Collection::create( $swatches );
+
+		$field_key = 'field_test_swatch';
+
+		acf_add_local_field( [
+			'key'           => $field_key,
+			'name'          => 'test_swatch',
+			'type'          => 'swatch',
+			'choices'       => $collection->format_for_acf(),
+		] );
+
+		$field = get_field_object( $field_key );
+
+		$this->assertCount( 3, $field['choices'] );
+
+		$this->assertSame( 'White', $field['choices']['#ffffff'] );
+		$this->assertSame( 'Black', $field['choices']['#000000'] );
+		$this->assertSame( 'Grey', $field['choices']['#696969'] );
 	}
 
 	public function test_file_field(): void {
