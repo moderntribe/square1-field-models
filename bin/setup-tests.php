@@ -3,13 +3,14 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/src/Downloader.php';
-require __DIR__ . '/src/Acf_Downloader.php';
+require __DIR__ . '/src/Plugin_Downloader.php';
 require __DIR__ . '/src/Wordpress_Downloader.php';
 require __DIR__ . '/src/Installer.php';
 
 $downloaders = [
 	new Wordpress_Downloader(),
-	new Acf_Downloader(),
+	new Plugin_Downloader( 'advanced-custom-fields' ),
+	new Plugin_Downloader( 'acf-color-swatches' ),
 ];
 
 ( new Installer( $downloaders ) )->install();

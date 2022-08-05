@@ -44,8 +44,10 @@ modules:
       theme: twentytwentytwo
       plugins:
         - advanced-custom-fields/acf.php
+        - acf-color-swatches/acf-swatch.php
       activatePlugins:
         - advanced-custom-fields/acf.php
+        - acf-color-swatches/acf-swatch.php
 env:
   singlesite:
   # nothing changes
